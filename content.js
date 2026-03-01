@@ -119,6 +119,20 @@ function buildCSS(settings) {
     rules.push('ytd-in-feed-ad-layout-renderer { display: none !important; }');
     rules.push('ytd-banner-promo-renderer { display: none !important; }');
   }
+  // Hide Subscription Card
+  // Hides the Subscriptions section in both the full expanded guide sidebar
+  // AND the collapsed mini-guide (icon-only bar) that appears when the
+  // sidebar panel is closed — as seen in the mini nav with Home/Shorts/Subscriptions/You icons.
+  if (settings.hideSubscriptionCard) {
+    // Full expanded sidebar: dedicated subscriptions section renderer
+    rules.push('ytd-guide-subscriptions-section-renderer { display: none !important; }');
+    // Full expanded sidebar: guide section identified by /feed/subscriptions link
+    rules.push('ytd-guide-section-renderer:has(ytd-guide-entry-renderer a[href^="/feed/subscriptions"]) { display: none !important; }');
+    // Collapsed mini-guide (icon-only bar): the Subscriptions icon entry
+    rules.push('ytd-mini-guide-entry-renderer:has(a[href^="/feed/subscriptions"]) { display: none !important; }');
+    // Collapsed mini-guide: also target by title attribute as a fallback
+    rules.push('ytd-mini-guide-entry-renderer:has(a[title="Subscriptions"]) { display: none !important; }');
+  }
 
   // Hide Subscription Button
   if (settings.hideSubscriptionButton) {
