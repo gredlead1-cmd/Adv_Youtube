@@ -27,8 +27,10 @@ const DEFAULT_SETTINGS = {
 
   // Feeds
   hideSponsoredCards: false,
+  hideSubscriptionCard: false,
   hideSubscriptionButton: false,
   hideMembersOnlyVideos: false,
+  hidePlaylistCards: false,
   hideMixRadioPlaylists: false,
 
   // Watch Page
@@ -244,7 +246,7 @@ function injectStyles(settings) {
   styleTag.textContent = buildCSS(settings);
 }
 
-// ───────────────────────────────────��─────────
+// ───────────────────────────────────  ─────────
 // Homepage detection
 // ─────────────────────────────────────────────
 
