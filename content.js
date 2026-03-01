@@ -27,7 +27,6 @@ const DEFAULT_SETTINGS = {
 
   // Feeds
   hideSponsoredCards: false,
-  hideSubscriptionCard: false,
   hideSubscriptionButton: false,
   hideMembersOnlyVideos: false,
   hideMixRadioPlaylists: false,
@@ -121,21 +120,6 @@ function buildCSS(settings) {
     rules.push('ytd-banner-promo-renderer { display: none !important; }');
   }
 
-  // Hide Subscription Card
-  // Hides the Subscriptions section in both the full expanded guide sidebar
-  // AND the collapsed mini-guide (icon-only bar) that appears when the
-  // sidebar panel is closed — as seen in the mini nav with Home/Shorts/Subscriptions/You icons.
-  if (settings.hideSubscriptionCard) {
-    // Full expanded sidebar: dedicated subscriptions section renderer
-    rules.push('ytd-guide-subscriptions-section-renderer { display: none !important; }');
-    // Full expanded sidebar: guide section identified by /feed/subscriptions link
-    rules.push('ytd-guide-section-renderer:has(ytd-guide-entry-renderer a[href^="/feed/subscriptions"]) { display: none !important; }');
-    // Collapsed mini-guide (icon-only bar): the Subscriptions icon entry
-    rules.push('ytd-mini-guide-entry-renderer:has(a[href^="/feed/subscriptions"]) { display: none !important; }');
-    // Collapsed mini-guide: also target by title attribute as a fallback
-    rules.push('ytd-mini-guide-entry-renderer:has(a[title="Subscriptions"]) { display: none !important; }');
-  }
-
   // Hide Subscription Button
   if (settings.hideSubscriptionButton) {
     // Subscribe button on video watch page (below player)
@@ -148,12 +132,34 @@ function buildCSS(settings) {
     rules.push('#subscribe-button-shape { display: none !important; }');
   }
 
-  // Hide Members-only Videos
+  // ── FIX: Hide Members-only Videos ─────────
+  // YouTube renders members-only badges differently depending on context:
+  // - Feeds/search: overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY" attribute
+  // - Channel page grid/list: ytd-badge-supported-renderer with CSS class
+  // - Channel Members tab: page-subtype="memberships" browse page
+  // - Shelf/section on channel page: item-section-renderer containing badges
   if (settings.hideMembersOnlyVideos) {
+    // ── Main feed, subscriptions, search results ──
     rules.push('ytd-video-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
-    rules.push('ytd-grid-video-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
     rules.push('ytd-rich-item-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
+    // ── Watch page sidebar ──
     rules.push('ytd-compact-video-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
+    // ── Channel page grid view (overlay-style attribute variant) ──
+    rules.push('ytd-grid-video-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
+    // ── Channel page grid view (badge-style attribute variant) ──
+    rules.push('ytd-grid-video-renderer:has([badge-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
+    // ── Channel page list/grid (CSS class variant inside badge renderer) ──
+    rules.push('ytd-video-renderer:has(ytd-badge-supported-renderer .badge-style-type-members-only) { display: none !important; }');
+    rules.push('ytd-grid-video-renderer:has(ytd-badge-supported-renderer .badge-style-type-members-only) { display: none !important; }');
+    rules.push('ytd-rich-item-renderer:has(ytd-badge-supported-renderer .badge-style-type-members-only) { display: none !important; }');
+    // ── Channel Members tab — hide entire content section ──
+    rules.push('ytd-browse[page-subtype="memberships"] #contents { display: none !important; }');
+    // ── Members-only shelf/section anywhere on channel pages ──
+    rules.push('ytd-item-section-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
+    rules.push('ytd-shelf-renderer:has([overlay-style="BADGE_STYLE_TYPE_MEMBERS_ONLY"]) { display: none !important; }');
+    // ── yt-lockup elements (newer YouTube layout on channel pages) ──
+    rules.push('yt-lockup-view-model:has([badge-style="MEMBERS_ONLY"]) { display: none !important; }');
+    rules.push('ytd-rich-item-renderer:has(yt-lockup-view-model[members-only]) { display: none !important; }');
   }
 
   // ── FIX: Hide Mix / Radio Playlists ───────
@@ -224,7 +230,7 @@ function injectStyles(settings) {
   styleTag.textContent = buildCSS(settings);
 }
 
-// ─────────────────────────────────────────────
+// ───────────────────────────────────��─────────
 // Homepage detection
 // ─────────────────────────────────────────────
 
@@ -249,7 +255,7 @@ function markPageType() {
 
 let autoplayRetryTimer = null;
 let autoplayRetryCount = 0;
-const AUTOPLAY_MAX_RETRIES = 20;   // 20 × 500ms = 10 seconds max wait
+const AUTOPLAY_MAX_RETRIES = 20;    // 20 × 500ms = 10 seconds max wait
 const AUTOPLAY_RETRY_INTERVAL = 500;
 
 function tryDisableAutoplay() {
