@@ -21,6 +21,8 @@ const DEFAULT_SETTINGS = {
   hideHomepageFeed: false,
   hideAllComments: false,
   hideSponsoredCards: false,
+  hideSubscriptionCard: false,   // ✅ ADDED — fixes Hide Subscription Section
+  hideSubscriptionButton: false, // ✅ ADDED — fixes Hide Subscription Button
   hidePlaylistCards: false,
   hideMembersOnlyVideos: false,
   hideMixRadioPlaylists: false,
@@ -46,7 +48,8 @@ async function loadPopup() {
 function updateStats(settings) {
   const domToggles = [
     'hideShorts', 'hideHomepageFeed', 'hideAllComments',
-    'hideSponsoredCards', 'hidePlaylistCards', 'hideMembersOnlyVideos',
+    'hideSponsoredCards', 'hideSubscriptionCard', 'hideSubscriptionButton', // ✅ ADDED both here
+    'hidePlaylistCards', 'hideMembersOnlyVideos',
     'hideMixRadioPlaylists', 'hideVideoSidebar', 'hideLiveChat',
     'hideWatchPlaylistPanel', 'hideTopHeader', 'hideNotificationBell',
     'hideExploreAndTrending', 'disableAutoplay'
